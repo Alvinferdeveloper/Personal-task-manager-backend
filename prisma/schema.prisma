@@ -1,0 +1,48 @@
+datasource db{
+    provider = "mysql"
+    url = env("DATABASE_URL")
+}
+
+generator client{
+    provider = "prisma-client-js"
+    output   = "./generated/client"
+}
+
+model User{
+    id Int @id @default(autoincrement())
+    name String @db.VarChar(50)
+    lastName String @db.VarChar(50)
+    email String @unique
+    password String
+    categories Category[]
+    token Token[]
+}
+
+model Category{
+    id Int @id @default(autoincrement())
+    name String
+    description String
+    createdAt DateTime @default(now())
+    img_url String @db.VarChar(500)
+    user User @relation(fields: [userId],references: [id],onDelete: Cascade,onUpdate: Cascade)
+    userId Int
+    tasks Task[]
+}
+model Task {
+    id Int @id @default(autoincrement())
+    name String
+    state Boolean @default(false)
+    description String?
+    createdAt DateTime @default(now())
+    category Category @relation(fields: [categoryId],references: [id])
+    categoryId Int
+}
+
+model Token{
+    id Int @id @default(autoincrement())
+    token String
+    user User @relation(fields: [userId],references: [id],onDelete: Cascade,onUpdate: Cascade)
+    userId Int
+    expires Int
+}
+
